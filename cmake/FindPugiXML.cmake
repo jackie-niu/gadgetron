@@ -16,3 +16,8 @@ find_package_handle_standard_args(pugixml DEFAULT_MSG
         PUGIXML_LIBRARIES
         PUGIXML_INCLUDE_DIRS
         )
+
+add_library(pugixml INTERFACE)
+set_target_properties(pugixml PROPERTIES
+      INTERFACE_INCLUDE_DIRECTORIES ${PUGIXML_INCLUDE_DIRS})
+target_link_libraries(pugixml INTERFACE ${PUGIXML_LIBRARIES})

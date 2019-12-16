@@ -1,5 +1,6 @@
 configure_file(gadgetron_config.in gadgetron_config.h)
 
+include_directories($<TARGET_PROPERTY:pugixml,INTERFACE_INCLUDE_DIRECTORIES>)
 
 add_executable(gadgetron
         main.cpp
@@ -66,6 +67,7 @@ add_executable(gadgetron
 target_link_libraries(gadgetron
         gadgetron_core
         gadgetron_toolbox_log
+        pugixml
         boost
         )
 
