@@ -110,8 +110,11 @@ namespace Gadgetron {
             typename fftw_types<T>::plan* plan;
         };
 
+#ifdef USE_OMP
         const int num_max_threads = omp_get_max_threads();
-
+#else
+        const int num_max_threads = 1;
+#endif
         int contigous_rank(const boost::container::flat_set<int>& dimensions) {
             if (!dimensions.count(0))
                 return 0;
