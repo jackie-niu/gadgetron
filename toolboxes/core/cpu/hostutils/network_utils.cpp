@@ -1,6 +1,12 @@
 
 #include "network_utils.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+
 #include <boost/asio.hpp>
+
+#pragma clang diagnostic pop
 
 #include <iostream>
 #include <stack>
