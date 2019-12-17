@@ -6,6 +6,9 @@
 #if defined _WIN32 || _WIN64
 #include <libloaderapi.h>
 #endif
+#if defined __APPLE__
+#include <mach-o/dyld.h>
+#endif
 
 namespace {
 
