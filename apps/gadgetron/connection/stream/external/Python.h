@@ -1,6 +1,11 @@
 #pragma once
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wnon-virtual-dtor"
+
 #include <boost/process.hpp>
+
+#pragma clang diagnostic pop
 
 #include "connection/Config.h"
 
