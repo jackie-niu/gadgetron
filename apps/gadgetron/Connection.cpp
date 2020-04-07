@@ -8,7 +8,11 @@
 #if !(_WIN32)
 #include <cstdlib>
 #include <unistd.h>
+#if __APPLE__ && __MACH__
+#include <sys/wait.h>
+#else
 #include <wait.h>
+#endif
 #endif
 
 using namespace Gadgetron::Server::Connection;
