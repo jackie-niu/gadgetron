@@ -201,7 +201,7 @@ endif()
 if (WIN32)
 find_package(Boost 1.65.0 COMPONENTS system date_time chrono program_options filesystem timer exception REQUIRED )
 else()
-find_package(Boost 1.65.0 COMPONENTS system program_options filesystem timer REQUIRED )
+find_package(Boost 1.65.0 COMPONENTS system program_options filesystem timer date_time REQUIRED )
 endif()
 add_library(boost INTERFACE)
 set_target_properties(boost PROPERTIES
