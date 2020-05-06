@@ -204,8 +204,10 @@ else()
 find_package(Boost 1.65.0 COMPONENTS system program_options filesystem timer date_time REQUIRED )
 endif()
 add_library(boost INTERFACE)
+if (DEFINED Boost_INCLUDE_DIR)
 set_target_properties(boost PROPERTIES
 INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
+endif()
 #set_property(TARGET boost PROPERTY INTERFACE_LINK_LIBRARIES ${Boost_LIBRARIES})
 target_link_libraries(boost INTERFACE ${Boost_LIBRARIES} ${CMAKE_DL_LIBS})
 
