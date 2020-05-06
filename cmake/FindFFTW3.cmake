@@ -103,9 +103,15 @@ else ()
 
     # Set fftw3 version to be read in other CMakeLists.
     list(GET FFTW3_LIBRARIES 0 _first_lib)
-    execute_process(COMMAND readlink -f ${_first_lib}
-                    OUTPUT_VARIABLE _readlink_output_string
-                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if (NOT APPLE) # OS X does not have -f option in readlink
+       execute_process(COMMAND readlink -f ${_first_lib}
+                       OUTPUT_VARIABLE _readlink_output_string
+                       OUTPUT_STRIP_TRAILING_WHITESPACE)
+    else () # Homebrew and MacPorts install greadlink which does not -f option
+       execute_process(COMMAND greadlink -f ${_first_lib}
+             OUTPUT_VARIABLE _readlink_output_string
+             OUTPUT_STRIP_TRAILING_WHITESPACE)
+    endif ()
 
     set(_dot_so_dot ".so.")
     string(FIND ${_readlink_output_string} ${_dot_so_dot} _dot_so_dot_position)
