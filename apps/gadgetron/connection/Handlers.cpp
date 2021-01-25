@@ -7,6 +7,13 @@
 #include "io/primitives.h"
 #include "Response.h"
 
+#if defined(__APPLE__)
+#include <libkern/OSByteOrder.h>
+#define le64toh(x) OSSwapLittleToHostInt64(x)
+#else
+#include <endian.h>
+#endif
+
 namespace {
 
     using namespace Gadgetron::Server;
@@ -54,6 +61,7 @@ namespace {
         answers["gadgetron::cuda::runtime"]      = Info::CUDA::cuda_runtime_version;
         answers["gadgetron::cuda::memory"]       = cuda_memory;
         answers["gadgetron::cuda::capabilities"] = cuda_capabilities;
+        answers["gadgetron::info::endianness"]   = Info::endianness;
     }
 }
 

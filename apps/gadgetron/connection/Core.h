@@ -10,6 +10,13 @@
 #include "Channel.h"
 #include "Context.h"
 
+#if defined(__APPLE__)
+#include <libkern/OSByteOrder.h>
+#define le16toh(x) OSSwapLittleToHostInt16(x)
+#else
+#include <endian.h>
+#endif
+
 namespace Gadgetron::Server::Connection {
 
     class ErrorReporter {
@@ -96,6 +103,13 @@ namespace Gadgetron::Server::Connection {
 
         while (!closed) {
             auto id = Core::IO::read<uint16_t>(stream);
+            // Switch from LITTLE ENDIAN to HOST
+            // LITTLE ENDIAN was chosen as the network format to minimize disruption because at
+            // that time most systems using gadgetron were LITTLE ENDIAN
+            // All message id values must be LITTLE ENDIAN and all other values must be server
+            // native endianness. Clients can determine the appropriate endianness by querying
+            // "gadgetron::info:endianness"
+            id = le16toh(id);
             handlers.at(id)->handle(stream, channel);
         }
     }

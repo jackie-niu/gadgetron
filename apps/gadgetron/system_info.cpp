@@ -6,6 +6,11 @@
 #include "connection/stream/external/Matlab.h"
 #include "log.h"
 
+#if defined(__APPLE__)
+#include <machine/endian.h>
+#else
+#include <endian.h>
+#endif
 
 #if defined(_WIN32)
 #include <Windows.h>
@@ -81,6 +86,18 @@ namespace Gadgetron::Server::Info {
 
     bool matlab_support() {
         return Gadgetron::Server::Connection::Stream::matlab_available();
+    }
+
+    std::string endianness() {
+#if BTYE_ORDER == BIG_ENDIAN
+       return "BIG";
+#elif BYTE_ORDER == LITTLE_ENDIAN
+       return "LITTLE";
+#elif BYTE_ORDER == PDP_ENDIAN
+       return "PDP";
+#else
+       return "OTHER";
+#endif
     }
 
 #if defined USE_CUDA
@@ -198,6 +215,7 @@ namespace Gadgetron::Server::Info {
         os << "  -- System Memory size : " << system_memory() / (1024 * 1024) << " MB" << std::endl;
         os << "  -- Python Support     : " << (python_support() ? "YES" : "NO") << std::endl;
         os << "  -- Matlab Support     : " << (matlab_support() ? "YES" : "NO") << std::endl;
+        os << "  -- Endianness         : " << endianness().c_str() << std::endl;
         CUDA::print_cuda_information(os);
         os << std::endl;
     }

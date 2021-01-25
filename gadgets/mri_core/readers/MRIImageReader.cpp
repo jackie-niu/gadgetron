@@ -1,5 +1,6 @@
 #include "MRIImageReader.h"
 #include <ismrmrd/ismrmrd.h>
+#include <ismrmrd/serialize.h>
 #include <ismrmrd/meta.h>
 #include "io/primitives.h"
 #include "MessageID.h"
@@ -9,18 +10,20 @@ namespace Gadgetron {
     namespace {
         template<class T>
         Core::Message
-        combine_and_read(std::istream &stream, ISMRMRD::ImageHeader header,
-                         Core::optional<ISMRMRD::MetaContainer> meta) {
+        combine_and_read(ISMRMRD::ImageHeader header,
+                         Core::optional<ISMRMRD::MetaContainer> meta,
+                         void *data) {
 
             using namespace Gadgetron::Core;
             auto array = hoNDArray<T>(
                     header.matrix_size[0],
                     header.matrix_size[1],
                     header.matrix_size[2],
-                    header.channels
+                    header.channels,
+                    reinterpret_cast<T*>(data),
+                    true
             );
 
-            IO::read(stream, array.data(), array.size());
             return Core::Message(std::move(header), std::move(array), std::move(meta));
         }
 
@@ -40,26 +43,25 @@ namespace Gadgetron {
     Core::Message MRIImageReader::read(std::istream &stream) {
         using namespace Gadgetron::Core;
 
-        auto header = IO::read<ISMRMRD::ImageHeader>(stream);
-        typedef unsigned long long size_t_type;
+        ISMRMRD::ISMRMRD_Image image;
+        ISMRMRD::CompressiblePortableBinaryInputArchive iarchive(stream);
+        iarchive(image);
 
-        //Read meta attributes
-
-        auto meta_attrib_length = IO::read<size_t>(stream);
+        ISMRMRD::ImageHeader header(image.head);
 
         optional<ISMRMRD::MetaContainer> meta;
-        if (meta_attrib_length > 0) {
-            auto buffer = std::make_unique<char[]>(meta_attrib_length + 1);
-
-            stream.read(buffer.get(), meta_attrib_length);
-
+        if (image.head.attribute_string_len > 0) {
             meta = ISMRMRD::MetaContainer();
 
-            ISMRMRD::deserialize(buffer.get(), *meta);
+            ISMRMRD::deserialize(image.attribute_string, *meta);
         }
 
+        // Steal the image data
+        void *pData = image.data;
+        image.data = nullptr;
+
         return Core::visit([&](auto type_tag) {
-            return combine_and_read<decltype(type_tag)>(stream, std::move(header), std::move(meta));
+            return combine_and_read<decltype(type_tag)>(std::move(header), std::move(meta), pData);
         }, ismrmrd_type_map.at(header.data_type));
     }
 

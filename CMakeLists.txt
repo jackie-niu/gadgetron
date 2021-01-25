@@ -269,6 +269,8 @@ install(TARGETS armadillo EXPORT gadgetron-export)
 
 find_package(PugiXML REQUIRED)
 
+find_package(ZFP REQUIRED)
+find_package(cereal REQUIRED)
 find_package(ISMRMRD CONFIG REQUIRED)
 
 

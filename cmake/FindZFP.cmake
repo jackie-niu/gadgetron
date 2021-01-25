@@ -10,8 +10,12 @@
 ######################################################################## 
 find_path(ZFP_INCLUDE_DIR zfp/zfp.h /usr/include /usr/local/include $ENV{ZFP_ROOT} $ENV{ZFP_ROOT}/inc DOC "directory containing zfp/zfp.h for ZFP library")  
 find_library(ZFP_LIBRARY NAMES ZFP zfp PATHS /usr/lib /usr/local/lib $ENV{ZFP_ROOT}/lib $ENV{ZFP_ROOT} DOC "ZFP library file") 
- 
-if (WIN32 AND NOT CYGWIN) 
+
+if (NOT ZFP_INCLUDE_DIR)
+	find_path(ZFP_INCLUDE_DIR zfp.h /usr/include $ENV{ZFP_ROOT} $ENV{ZFP_ROOT}/include DOC "directory containing zfp.h for ZFP library")
+endif()
+
+if (WIN32 AND NOT CYGWIN)
 	
 	find_library(ZFP_DEBUG_LIBRARY NAMES ZFPd zfpd PATHS ${CMAKE_SOURCE_DIR}/../ZFP_wrappers/lib/ /usr/lib /usr/local/lib $ENV{ZFP_ROOT}/lib $ENV{ZFP_ROOT} DOC "ZFP library file (debug version)") 
 endif () 
@@ -33,12 +37,18 @@ if (ZFP_FOUND)
 	if (NOT ZFP_FIND_QUIETLY) 
 		message(STATUS "Found ZFP library: ${ZFP_LIBRARY}") 
 		message(STATUS "Found ZFP include: ${ZFP_INCLUDE_DIR}") 
-	endif () 
-else () 
+	endif ()
+	if (NOT TARGET zfp::zfp)
+		add_library(zfp::zfp SHARED IMPORTED)
+		set_target_properties(zfp::zfp PROPERTIES
+				INTERFACE_INCLUDE_DIRECTORIES ${ZFP_INCLUDE_DIR}
+				IMPORTED_LOCATION ${ZFP_LIBRARY})
+	endif()
+else ()
 	if (ZFP_FIND_REQUIRED) 
 		message(FATAL_ERROR "Could not find ZFP") 
-	endif () 
-endif () 
+	endif ()
+endif ()
 
 # TSS: backwards compatibility
 set(ZFP_LIBRARIES ${ZFP_LIBRARY}) 

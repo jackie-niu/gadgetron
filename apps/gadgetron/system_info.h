@@ -10,6 +10,7 @@ namespace Gadgetron::Server::Info {
 
     std::string gadgetron_version();
     std::string gadgetron_build();
+    std::string endianness();
 
     size_t system_memory();
     bool python_support();
