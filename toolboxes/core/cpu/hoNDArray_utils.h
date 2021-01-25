@@ -5,6 +5,7 @@
 #include "hoNDArray.h"
 #include "vector_td_utilities.h"
 
+#include <boost/math/special_functions/trunc.hpp>
 #include <boost/math/interpolators/cubic_b_spline.hpp>
 #include <boost/range/adaptor/strided.hpp>
 
